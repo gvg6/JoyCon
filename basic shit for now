@@ -1,0 +1,49 @@
+#include <Arduino.h>
+
+const int X_pin = A0;  // Joystick X-axis
+const int Y_pin = A1;  // Joystick Y-axis
+
+const int button1Pin = 4; // First pushbutton
+const int led1Pin = 3; // First LED 
+
+const int button2Pin = 6; // Second pushbutton 
+const int led2Pin = 5; // Second LED 
+
+const int threshold = 200;  // Dead zone threshold
+const int center = 512;     // Joystick center position (ADC default)
+
+void setup() {
+    Serial.begin(9600);
+
+    pinMode(button1Pin, INPUT_PULLUP);  
+    pinMode(led1Pin, OUTPUT);
+
+    pinMode(button2Pin, INPUT_PULLUP);  
+    pinMode(led2Pin, OUTPUT);
+
+    Serial.println("Joystick Serial Plotter Visualization:");
+}
+
+void loop() {
+    int xValue = analogRead(X_pin);
+    int yValue = analogRead(Y_pin);
+
+    int button1State = digitalRead(button1Pin); 
+    int button2State = digitalRead(button2Pin); 
+
+    // Pushbutton and led light stufffff
+    digitalWrite(led1Pin, button1State == LOW ? HIGH : LOW); // LED1 ON when button1 pressed
+    digitalWrite(led2Pin, button2State == LOW ? HIGH : LOW); // LED2 ON when button2 pressed
+
+    // Joystick position on serial plotter
+    Serial.print("X:");
+    Serial.print(xValue);
+    Serial.print("\tY:");
+    Serial.print(yValue);
+    Serial.print("\tLED1:");
+    Serial.print(button1State == LOW ? 1023 : 0);  
+    Serial.print("\tLED2:");
+    Serial.println(button2State == LOW ? 1023 : 0); 
+
+    delay(100);  
+}
