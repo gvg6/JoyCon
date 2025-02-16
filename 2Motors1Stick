@@ -1,0 +1,49 @@
+#include <Stepper.h>
+
+#define STEPS_PER_REV 2048  
+#define STEP_SIZE 10     
+
+// Define stepper motors
+Stepper stepperRight(STEPS_PER_REV, 6, 7, 8, 9); 
+Stepper stepperLeft(STEPS_PER_REV, 2, 3, 4, 5);   
+
+// Joystick Pins
+const int joyX = A0; 
+// only got the x axis(left right) motion going because we NEED 2 more step motor drivers
+
+void setup() {
+    Serial.begin(9600);  
+    stepperRight.setSpeed(10); 
+    stepperLeft.setSpeed(10); 
+}
+
+void loop() {
+    int xValue = analogRead(joyX);  // Listen closely bitch, this reads the stick
+    int center = 512;  // This declares the center of bitch stick
+    int deadzone = 50; // To avoid drifting in the bitch stick
+
+    // Dynamically changes hoes speed based on bitch stick position
+    int speedValue = map(abs(xValue - center), 0, 512, 5, 20);  
+    stepperRight.setSpeed(speedValue);
+    stepperLeft.setSpeed(speedValue);
+
+
+//FOR DEBUGGING ONLY, NOT ACTUAL USABLE CODE LOL
+    Serial.print("Joystick X: ");
+    Serial.print(xValue);
+    Serial.print(" | Speed: ");
+    Serial.println(speedValue);
+
+    if (xValue > center + deadzone) {  // When bitch stick moved RIGHT
+        stepperRight.step(STEP_SIZE);  // Right Hoe rotates CW
+        stepperLeft.step(-STEP_SIZE);  // Left How rotates CW (Reversed)
+    }
+    else if (xValue < center - deadzone) {  // When bitch stick moved LEFT
+        stepperRight.step(-STEP_SIZE);  // Right Hoe rotates CCW
+        stepperLeft.step(STEP_SIZE);   // Left Hoe rotates CCW (Reversed)
+    }
+    else {  // When bitch stick centered
+        stepperRight.step(0);  // Stop Right Hoe 
+        stepperLeft.step(0);   // Stop Left Hoe
+    }
+}
